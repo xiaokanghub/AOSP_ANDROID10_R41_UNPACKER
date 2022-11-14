@@ -1,0 +1,18 @@
+
+project libcore/
+diff --git a/dalvik/src/main/java/dalvik/system/DexFile.java b/dalvik/src/main/java/dalvik/system/DexFile.java
+index 486ee90830b..06e45779986 100644
+--- a/dalvik/src/main/java/dalvik/system/DexFile.java
++++ b/dalvik/src/main/java/dalvik/system/DexFile.java
+@@ -430,6 +430,11 @@ public final class DexFile {
+             throws ClassNotFoundException, NoClassDefFoundError;
+     @UnsupportedAppUsage
+     private static native String[] getClassNameList(Object cookie);
++    //add
++    private static native void fartextMethodCode(Object m);
++    private static native boolean setMikRomConfig(Object configJson);
++    private static native void dumpRepair();
++    //add end
+     private static native boolean isBackedByOatFile(Object cookie);
+     private static native void setTrusted(Object cookie);
+     /*

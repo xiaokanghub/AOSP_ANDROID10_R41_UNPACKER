@@ -1,0 +1,48 @@
+
+project bionic/
+diff --git a/libc/bionic/ptrace.cpp b/libc/bionic/ptrace.cpp
+index 5156ec24c..594a0d199 100644
+--- a/libc/bionic/ptrace.cpp
++++ b/libc/bionic/ptrace.cpp
+@@ -27,6 +27,7 @@
+  */
+ 
+ #include <stdarg.h>
++#include <unistd.h>
+ #include <sys/ptrace.h>
+ 
+ extern "C" long __ptrace(int req, pid_t pid, void* addr, void* data);
+@@ -46,6 +47,33 @@ long ptrace(int req, ...) {
+     data = va_arg(args, void*);
+   }
+   va_end(args);
++  
++  ///ADD START
++     int caller_uid=getuid();
++
++     //int caller_pid=getpid();
++     //caller_uid>10000说明是普通App调用
++     if(caller_uid>10000)
++     {
++
++        if(req ==PTRACE_TRACEME)
++        {
++           //自己ptrace自己,直接返回成功
++           return 0;
++        }
++      if(req==PTRACE_ATTACH)
++      {
++          int caller_ppid=getppid();
++        if(caller_ppid==pid)
++        {
++           //如果是子进程ptrace父进程，直接返回成功
++           return 0;
++        }
++            //TODO 也可以通过读取/proc/$pid/status获取进程的uid，如果uid和当前调用ptrace的uid一致，也直接返回成功
++
++      }
++     }
++     ///ADD END
+ 
+   long result = __ptrace(req, pid, addr, data);
+   if (is_peek && result == 0) {
